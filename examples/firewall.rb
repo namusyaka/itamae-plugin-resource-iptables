@@ -7,6 +7,14 @@ iptables_policy 'INPUT' do
   action :drop
 end
 
+iptables_policy 'OUTPUT' do
+  action :accept
+end
+
+iptables_policy 'FORWARD' do
+  action :drop
+end
+
 iptables_rule 'accept loopback' do
   action :accept
   chain 'INPUT'
