@@ -24,7 +24,14 @@ module Itamae
 
         define_attribute :jump, type: String
 
+        # state match
         define_attribute :state, type: Array
+
+        # owner match
+        [:uid_owner, :gid_owner].each do |key|
+          define_attribute key, type: String
+          define_attribute :"not_#{key}", type: String
+        end
 
         define_attribute :log_level, type: String
         define_attribute :log_prefix, type: String
@@ -83,15 +90,37 @@ module Itamae
             end
           end
 
-          if state = attrs['state']
-            rule << '--match' << 'state' << '--state' << state.join(',')
-          elsif not_state = attrs['not_state']
-            rule << '--match' << 'state' << '!' << '--state' << state.join(',')
-          end
-
+          rule += build_rules_for_state(attrs)
+          rule += build_rules_for_owner(attrs)
           rule << '--match' << 'comment' << '--comment' << attrs['comment']
 
           rule
+        end
+
+        def build_rules_for_state(attrs)
+          if state = attrs['state']
+            ['--match', 'state', '--state', state.join(',')]
+          elsif not_state = attrs['not_state']
+            ['--match', 'state', '!', '--state', state.join(',')]
+          else
+            []
+          end
+        end
+
+        def build_rules_for_owner(attrs)
+          rules = %w[uid_owner gid_owner].flat_map do |key|
+            if id = attrs[key]
+              ["--#{key.gsub('_', '-')}", id]
+            elsif not_id = attrs["not_#{key}"]
+              ['!', "--#{key.gsub('_', '-')}", not_id]
+            else
+              []
+            end
+          end
+          unless rules.empty?
+            rules.unshift('--match', 'owner')
+          end
+          rules
         end
       end
     end
