@@ -7,8 +7,16 @@ module Itamae
         define_attribute :action, default: :run
 
         def action_run(options)
-          run_command(['iptables', '-F'])
-          run_command(['iptables', '-X'])
+          get_tables.each do |table|
+            run_command(['iptables', '--table', table, '--flush'])
+            run_command(['iptables', '--table', table, '--delete-chain'])
+          end
+        end
+
+        private
+
+        def get_tables
+          run_command(['cat', '/proc/net/ip_tables_names']).stdout.each_line.map(&:chomp)
         end
       end
     end
