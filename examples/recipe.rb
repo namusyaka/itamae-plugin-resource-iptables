@@ -1,5 +1,8 @@
 require 'itamae/plugin/resource/iptables'
 
+iptables_flush 'flush' do
+end
+
 iptables_policy 'INPUT' do
   action :drop
 end
