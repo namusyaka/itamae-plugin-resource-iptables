@@ -46,17 +46,10 @@ module Itamae
           end
         end
 
-        def action_accept(options)
-          action_create(options)
-        end
-
-        def action_drop(options)
-          action_create(options)
-        end
-
-        def action_log(options)
-          action_create(options)
-        end
+        alias_method :action_accept, :action_create
+        alias_method :action_drop, :action_create
+        alias_method :action_log, :action_create
+        alias_method :action_redirect, :action_create
 
         private
 
