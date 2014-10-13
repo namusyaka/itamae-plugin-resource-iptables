@@ -20,7 +20,8 @@ Or install it yourself as:
 
 ## Usage
 
-[examples/firewall.rb](examples/firewall.rb)
+- [examples/firewall.rb](examples/firewall.rb)
+- [examples/rtmpsuck.rb](examples/rtmpsuck.rb)
 
 ## Contributing
 
