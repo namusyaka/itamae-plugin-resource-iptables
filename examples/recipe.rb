@@ -54,3 +54,6 @@ iptables_rule 'accept ssh' do
   action :accept
   chain 'SSH_LOGGING'
 end
+
+iptables_save '/etc/iptables/iptables.rules' do
+end
