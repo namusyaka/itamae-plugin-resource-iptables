@@ -101,7 +101,7 @@ module Itamae
           if state = attrs['state']
             ['--match', 'state', '--state', state.join(',')]
           elsif not_state = attrs['not_state']
-            ['--match', 'state', '!', '--state', state.join(',')]
+            ['--match', 'state', '!', '--state', not_state.join(',')]
           else
             []
           end
