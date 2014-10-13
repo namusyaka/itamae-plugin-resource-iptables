@@ -57,3 +57,7 @@ end
 
 iptables_save '/etc/iptables/iptables.rules' do
 end
+
+service 'iptables.service' do
+  action [:enable, :start]
+end

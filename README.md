@@ -1,6 +1,6 @@
 # Itamae::Plugin::Resource::Iptables
 
-TODO: Write a gem description
+[itamae](https://github.com/ryotarai/itamae) resource plugin to manage iptables.
 
 ## Installation
 
@@ -20,11 +20,11 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+[examples/firewall.rb](examples/firewall.rb)
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/itamae-plugin-resource-iptables/fork )
+1. Fork it ( https://github.com/eagletmt/itamae-plugin-resource-iptables/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
