@@ -42,6 +42,7 @@ module Itamae
         define_attribute :comment, type: String, default_name: true
 
         def pre_action
+          super
           if attributes.action != :create
             attributes.jump = attributes.action.to_s.upcase
           end
