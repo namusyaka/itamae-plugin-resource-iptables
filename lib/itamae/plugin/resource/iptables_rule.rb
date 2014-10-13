@@ -10,19 +10,22 @@ module Itamae
           destination: { type: String },
           in_interface: { type: String },
           out_interface: { type: String },
-          sport: { type: Fixnum },
-          dport: { type: Fixnum },
         }
 
         define_attribute :chain, type: String, required: true
         define_attribute :table, type: String, default: 'filter'
+        define_attribute :jump, type: String
 
         NEGATABLE_RULES.each do |key, opts|
           define_attribute key, opts
           define_attribute :"not_#{key}", opts
         end
 
-        define_attribute :jump, type: String
+        # multiport match
+        [:sport, :dport].each do |key|
+          define_attribute key, type: [Fixnum, Range, Array]
+          define_attribute :"not_#{key}", type: [Fixnum, Range, Array]
+        end
 
         # state match
         define_attribute :state, type: Array
@@ -90,11 +93,72 @@ module Itamae
             end
           end
 
+          rule += build_rules_for_multiport(attrs)
           rule += build_rules_for_state(attrs)
           rule += build_rules_for_owner(attrs)
           rule << '--match' << 'comment' << '--comment' << attrs['comment']
 
           rule
+        end
+
+        class PortSpecifier
+          def initialize
+            @multiport = false
+            @rule = []
+          end
+
+          def and(key, port)
+            add_port_spec(key, port)
+            self
+          end
+
+          def not(key, port)
+            @rule << '!'
+            add_port_spec(key, port)
+            self
+          end
+
+          def to_rule
+            if @multiport
+              %w[--match multiport] + @rule
+            else
+              @rule
+            end
+          end
+
+          private
+
+          def add_port_spec(key, port)
+            case port
+            when Array
+              @multiport = true
+              @rule << "--#{key}s" << port.join(',')
+            when Range
+              @multiport = true
+              start = port.begin
+              finish = port.end
+              if port.exclude_end?
+                finish -= 1
+              end
+              @rule << "--#{key}s" << "#{start}:#{finish}"
+            when Fixnum
+              @rule << "--#{key}" << port.to_s
+            else
+              raise "Wrong port specifier: #{port.inspect}"
+            end
+          end
+        end
+
+        def build_rules_for_multiport(attrs)
+          spec = PortSpecifier.new
+          %w[dport sport].each do |key|
+            if port = attrs[key]
+              spec.and(key, port)
+            elsif not_port = attrs["not_#{key}"]
+              spec.not(key, not_port)
+            end
+          end
+          spec.to_rule
         end
 
         def build_rules_for_state(attrs)
