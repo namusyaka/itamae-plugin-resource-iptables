@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Itamae::Plugin::Resource::Iptables::VERSION
   spec.authors       = ["Kohei Suzuki"]
   spec.email         = ["eagletmt@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{itamae resource plugin to manage iptables.}
+  spec.description   = %q{itamae resource plugin to manage iptables.}
+  spec.homepage      = "https://github.com/eagletmt/itamae-plugin-resource-iptables"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
