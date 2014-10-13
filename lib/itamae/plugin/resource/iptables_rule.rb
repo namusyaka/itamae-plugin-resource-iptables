@@ -19,6 +19,9 @@ module Itamae
 
         define_attribute :state, type: Array
 
+        define_attribute :log_level, type: String
+        define_attribute :log_prefix, type: String
+
         define_attribute :comment, type: String, default_name: true
 
         def pre_action
@@ -51,6 +54,10 @@ module Itamae
           action_create(options)
         end
 
+        def action_log(options)
+          action_create(options)
+        end
+
         private
 
         SIMPLE_RULE_KEYS = %w[
@@ -62,6 +69,8 @@ module Itamae
           out_interface
           sport
           dport
+          log_level
+          log_prefix
         ]
 
         def build_rule(attrs)
