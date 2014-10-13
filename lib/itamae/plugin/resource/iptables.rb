@@ -1,4 +1,6 @@
-require "itamae/plugin/resource/iptables/version"
+require 'itamae/plugin/resource/iptables/version'
+
+require 'itamae/plugin/resource/iptables_policy'
 
 module Itamae
   module Plugin
