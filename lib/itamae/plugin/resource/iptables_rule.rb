@@ -4,18 +4,25 @@ module Itamae
   module Plugin
     module Resource
       class IptablesRule < Itamae::Resource::Base
+        NEGATABLE_RULES = {
+          protocol: { type: String },
+          source: { type: String },
+          destination: { type: String },
+          in_interface: { type: String },
+          out_interface: { type: String },
+          sport: { type: Fixnum },
+          dport: { type: Fixnum },
+        }
+
         define_attribute :chain, type: String, required: true
         define_attribute :table, type: String, default: 'filter'
-        define_attribute :protocol, type: String
-        define_attribute :source, type: String
-        define_attribute :destination, type: String
-        define_attribute :jump, type: String
-        define_attribute :in_interface, type: String
-        define_attribute :out_interface, type: String
-        define_attribute :jump, type: String
 
-        define_attribute :sport, type: Fixnum
-        define_attribute :dport, type: Fixnum
+        NEGATABLE_RULES.each do |key, opts|
+          define_attribute key, opts
+          define_attribute :"not_#{key}", opts
+        end
+
+        define_attribute :jump, type: String
 
         define_attribute :state, type: Array
 
@@ -54,20 +61,21 @@ module Itamae
         private
 
         SIMPLE_RULE_KEYS = %w[
-          protocol
-          source
-          destination
           jump
-          in_interface
-          out_interface
-          sport
-          dport
           log_level
           log_prefix
         ]
 
         def build_rule(attrs)
           rule = []
+
+          NEGATABLE_RULES.each_key.map(&:to_s).each do |key|
+            if attrs.has_key?(key)
+              rule << "--#{key.gsub('_', '-')}" << attrs[key]
+            elsif attrs.has_key?("not_#{key}")
+              rule << "--#{key.gsub('_', '-')}" << '!' << attrs[key]
+            end
+          end
 
           SIMPLE_RULE_KEYS.each do |key|
             if attrs.has_key?(key)
@@ -77,6 +85,8 @@ module Itamae
 
           if state = attrs['state']
             rule << '--match' << 'state' << '--state' << state.join(',')
+          elsif not_state = attrs['not_state']
+            rule << '--match' << 'state' << '!' << '--state' << state.join(',')
           end
 
           rule << '--match' << 'comment' << '--comment' << attrs['comment']
