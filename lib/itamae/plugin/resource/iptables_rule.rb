@@ -33,7 +33,7 @@ module Itamae
           rule = build_rule(attributes)
           current.exist = run_command(['iptables', '--table', attributes.table, '--check', attributes.chain] + rule, error: false).exit_status == 0
           unless current.exist
-            Logger.info "Create rule for #{attributes.chain}: #{rule.join(' ')}"
+            Itamae.logger.info "Create rule for #{attributes.chain}: #{rule.join(' ')}"
           end
         end
 
