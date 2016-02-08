@@ -11,7 +11,7 @@ module Itamae
         def set_current_attributes
           current.exist = run_command(['iptables', '--table', attributes.table, '--list-rules', attributes.chain], error: false).exit_status == 0
           unless current.exist
-            Logger.info "Create chain #{attributes.chain}"
+            Itamae.logger.info "Create chain #{attributes.chain}"
           end
         end
 
